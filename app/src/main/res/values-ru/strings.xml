@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Executor</string>
+    <string name="accessibility_service_description">Сервис приложения помогает наблюдать за текстом и распознавать команды.</string>
+    <string name="accesibility_settings">Спец. возможности</string>
+    <string name="playground">Тестовое поле</string>
+    <string name="notificationDesc">Уведомления о работе сервиса</string>
+    <string name="notificationName">Работа сервиса</string>
+    <string name="serviceStarted">Сервис запущен</string>
+    <string name="serviceStopped">Сервис остановлен</string>
+    <string name="settings">Настройки</string>
+    <string name="app_setup">Настройка приложения</string>
+    <string name="accses_desc">Включите специальные возможности, что бы определять команды и запустить сервис.</string>
+    <string name="set_up_settings">Дайте разрешение на отправку уведомлений и доступ к памяти.</string>
+    <string name="available_commands">Доступные команды</string>
+    <string name="module">Модуль</string>
+    <string name="author">Автор</string>
+    <string name="built_in">Встроенный</string>
+    <string name="load_scripts">Загрузить модули</string>
+    <string name="scripts_help">Выберите папку из которой надо загрузить модули.</string>
+    <string name="home">Главная</string>
+    <string name="information">Информация</string>
+</resources>
