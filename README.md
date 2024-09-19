@@ -28,3 +28,4 @@ COMMANDS = {
 
 AUTHOR = "name"
 ```
+Your module will be named like file.
