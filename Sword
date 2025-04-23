@@ -1,0 +1,11 @@
+local sword = script.Parent -- Reference the sword object
+local player = game.Players.LocalPlayer -- Get the player
+local backpack = player:WaitForChild("Backpack") -- Access the player's backpack
+
+-- Function to equip the sword
+local function equipSword()
+    sword.Parent = backpack -- Move the sword to the backpack
+end
+
+-- Detect when the sword is clicked
+sword.ClickDetector.MouseClick:Connect(equipSword)
