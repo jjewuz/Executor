@@ -1,0 +1,16 @@
+local player = game.Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+local humanoid = character:WaitForChild("Humanoid")
+local flying = false
+
+local function toggleFly()
+    flying = not flying
+    humanoid.PlatformStand = flying
+end
+
+game:GetService("UserInputService").InputBegan:Connect(function(input, isProcessed)
+    if isProcessed then return end
+    if input.KeyCode == Enum.KeyCode.F then
+        toggleFly()
+    end
+end)
