@@ -1,6 +1,8 @@
 # Executor
 Real-time text formatting tool. Use `{command *arguments}>`. Example: `{ip}>` (without args), `{randomize 2 9}>` (2 args). Type `{help}>` to see all commands.
 
+#THIS IS NOT TOOL FOR ROBLOX HACKING. I DO NOT SUPPORT CHEATING ON ANY ABUSE WITH EXECUTOR APP. IT'S REAL-TIME TEXT FORMATTING TOOL. ALL SPAMERS WILL BE BANNED AND ISSUES WITH ROBLOX MODES WILL BE IGNORED.
+
 # Built-in commands
 `repeat <n> <text>` - repeat text n times
 
