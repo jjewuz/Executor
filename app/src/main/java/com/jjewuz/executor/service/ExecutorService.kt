@@ -135,7 +135,12 @@ class ExecutorService : AccessibilityService() {
                         val args = userArgs.map { PyObject.fromJava(it) }.toTypedArray()
                         func.call(*args)
                     } else {
-                        func.call(PyObject.fromJava(textBefore))
+                        // Пробуем вызвать без аргументов — если упадёт, значит, нужен text
+                        try {
+                            func.call()  // ← сначала без аргументов (для ip, info, date и т.д.)
+                        } catch (e: Throwable) {
+                            func.call(PyObject.fromJava(textBefore))  // ← если не вышло — с текстом
+                        }
                     }
 
                     val result = resultPy?.toString() ?: ""
