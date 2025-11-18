@@ -1,0 +1,22 @@
+<resources>
+    <string name="app_name">Executor</string>
+    <string name="accessibility_service_description">El servicio de Executor ayuda a la aplicación a detectar comandos y ejecutarlos.</string>
+    <string name="accesibility_settings">Configuración de accesibilidad</string>
+    <string name="playground">Patio de juegos</string>
+    <string name="notificationDesc">Notificar sobre el trabajo del servicio</string>
+    <string name="notificationName">Trabajo del servicio</string>
+    <string name="serviceStarted">Servicio iniciado</string>
+    <string name="serviceStopped">Servicio detenido</string>
+    <string name="settings">Configuraciones</string>
+    <string name="app_setup">Configuración de la aplicación</string>
+    <string name="accses_desc">Activa la configuración de accesibilidad para que la aplicación detecte comandos y comience el servicio.</string>
+    <string name="set_up_settings">Concede permisos a la aplicación: notificaciones y almacenamiento.</string>
+    <string name="available_commands">Comandos disponibles</string>
+    <string name="module">Módulo</string>
+    <string name="author">Autor</string>
+    <string name="built_in">Incorporado</string>
+    <string name="load_scripts">Cargar módulos</string>
+    <string name="scripts_help">Selecciona una carpeta para importar módulos personalizados.</string>
+    <string name="home">Inicio</string>
+    <string name="information">Información</string>
+</resources>

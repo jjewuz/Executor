@@ -1,0 +1,22 @@
+<resources>
+<string name="app_name">Executor</string>
+<string name="accessibility_service_description">خدمة الـ Executor تساعد التطبيق في اكتشاف الأوامر وتنفيذها.</string>
+<string name="accesibility_settings">إعدادات الوصول</string>
+<string name="playground">ملعب</string>
+<string name="notificationDesc">إعلام عن عمل الخدمة</string>
+<string name="notificationName">عمل الخدمة</string>
+<string name="serviceStarted">تم بدء الخدمة</string>
+<string name="serviceStopped">تم إيقاف الخدمة</string>
+<string name="settings">الإعدادات</string>
+<string name="app_setup">إعداد التطبيق</string>
+<string name="accses_desc">قم بتشغيل إعدادات الوصول لكي يكتشف التطبيق الأوامر ويبدأ الخدمة.</string>
+<string name="set_up_settings">امنح الأذونات للتطبيق: الإشعارات والتخزين.</string>
+<string name="available_commands">الأوامر المتاحة</string>
+<string name="module">وحدة</string>
+<string name="author">المؤلف</string>
+<string name="built_in">مضمن</string>
+<string name="load_scripts">تحميل الوحدات</string>
+<string name="scripts_help">اختر المجلد لاستيراد الوحدات المخصصة.</string>
+<string name="home">الصفحة الرئيسية</string>
+<string name="information">معلومات</string>
+</resources>

@@ -1,0 +1,22 @@
+<resources>
+    <string name="app_name">Executor</string>
+    <string name="accessibility_service_description">Der Executor-Dienst hilft der App, Befehle zu erkennen und auszuführen.</string>
+    <string name="accesibility_settings">Barrierefreiheitseinstellungen</string>
+    <string name="playground">Spielplatz</string>
+    <string name="notificationDesc">Benachrichtigung über den Dienstbetrieb</string>
+    <string name="notificationName">Dienstbetrieb</string>
+    <string name="serviceStarted">Dienst gestartet</string>
+    <string name="serviceStopped">Dienst gestoppt</string>
+    <string name="settings">Einstellungen</string>
+    <string name="app_setup">App-Einrichtung</string>
+    <string name="accses_desc">Schalten Sie die Barrierefreiheitseinstellungen ein, damit die App Befehle erkennt und den Dienst startet.</string>
+    <string name="set_up_settings">Geben Sie der App Berechtigungen: Benachrichtigungen und Speicher.</string>
+    <string name="available_commands">Verfügbare Befehle</string>
+    <string name="module">Modul</string>
+    <string name="author">Autor</string>
+    <string name="built_in">Eingebaut</string>
+    <string name="load_scripts">Module laden</string>
+    <string name="scripts_help">Wählen Sie einen Ordner, um benutzerdefinierte Module zu importieren.</string>
+    <string name="home">Startseite</string>
+    <string name="information">Informationen</string>
+</resources>
