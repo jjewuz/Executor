@@ -42,108 +42,112 @@ class ExecutorService : AccessibilityService() {
 
     override fun onServiceConnected() {
         super.onServiceConnected()
+        instance = this
         sendNotification(applicationContext, resources.getString(R.string.serviceStarted), "")
         loadInternalScripts()
     }
 
     fun loadInternalScripts() {
-        val scriptDir = File(filesDir, "scripts")
+        val scriptDir = File(filesDir, "scripts").apply { mkdirs() }
+        userModules.clear()
 
-        if (scriptDir.exists()) {
-            val python = Python.getInstance()
-            val pySys = python.getModule("sys")
+        if (scriptDir.listFiles().isNullOrEmpty()) {
+            Log.d("ExecutorService", "No user scripts")
+            return
+        }
 
-            // Добавляем новый путь в sys.path
-            pySys["path"]?.callAttr("append", scriptDir.path)
+        val py = Python.getInstance()
+        val sys = py.getModule("sys")
+        val path = sys["path"]!!
 
-            scriptDir.listFiles()?.forEach { file ->
-                if (file.extension == "py") {
-                    try {
-                        val moduleName = file.nameWithoutExtension
-                        val module = python.getModule(moduleName)
-                        val author = module["AUTHOR"]?.toString() ?: "Unknown"
-                        val commands = getCommandsMap(module)
+        val scriptPath = scriptDir.absolutePath
 
-                        val commandModule =
-                            CommandModule(name = moduleName, author = author, commands = commands)
-                        userModules.add(commandModule)
+        try {
+            path.callAttr("remove", scriptPath)
+        } catch (e: Throwable) {
+        }
+        path.callAttr("append", scriptPath)
 
+        scriptDir.listFiles()
+            ?.filter { it.isFile && it.extension.equals("py", ignoreCase = true) }
+            ?.forEach { file ->
+                try {
+                    val moduleName = file.nameWithoutExtension
+                    val module = py.getModule(moduleName)
 
-                        Log.d(
-                            "ScriptService",
-                            "Loaded module: $moduleName with commands: ${commands.keys}"
-                        )
-                    } catch (e: Exception) {
-                        Log.e("ScriptService", "Failed to load script ${file.name}: ${e.message}")
-                    }
+                    val author = module["AUTHOR"]?.toString() ?: "Unknown"
+                    val commands = getCommandsMap(module)
+
+                    userModules.add(CommandModule(moduleName, author, commands))
+                    Log.d("ExecutorService", "Loaded $moduleName by $author")
+                } catch (e: Throwable) {
+                    Log.e("ExecutorService", "Failed ${file.name}: ${e.message}", e)
                 }
             }
-        } else {
-            Log.e("ScriptService", "No scripts found in internal storage.")
-        }
     }
 
     override fun onInterrupt() {
         sendNotification(applicationContext, resources.getString(R.string.serviceStopped), "")
     }
 
-    private fun processNode(nodeInfo: AccessibilityNodeInfo) {
-        if (nodeInfo.className == "android.widget.EditText") {
-            nodeInfo.text?.let { text ->
-                val processedText = processText(text.toString())
-                if (processedText != null) {
-                    val arguments = Bundle()
-                    arguments.putCharSequence(
-                        AccessibilityNodeInfo.ACTION_ARGUMENT_SET_TEXT_CHARSEQUENCE,
-                        processedText
-                    )
-                    nodeInfo.performAction(AccessibilityNodeInfo.ACTION_SET_TEXT, arguments)
+    private fun processNode(root: AccessibilityNodeInfo) {
+        if (root.className == "android.widget.EditText" && root.isEditable) {
+            root.text?.toString()?.let { text ->
+                processText(text)?.let { newText ->
+                    val args = Bundle().apply {
+                        putCharSequence(AccessibilityNodeInfo.ACTION_ARGUMENT_SET_TEXT_CHARSEQUENCE, newText)
+                    }
+                    root.performAction(AccessibilityNodeInfo.ACTION_SET_TEXT, args)
                 }
             }
         }
+
+        for (i in 0 until root.childCount) {
+            root.getChild(i)?.let { processNode(it) }
+        }
     }
 
-    private fun processText(text: String): String? {
-        if (text.isBlank()) return null
+    private fun processText(fullText: String): String? {
+        val commandPattern = Regex("""\{([^}]+)\}>""")
+        val lastMatch = commandPattern.findAll(fullText).lastOrNull() ?: return null
 
-        val commandPattern = Regex("""\{(.+?)\}>""")
-        val matchResult = commandPattern.find(text)
+        val commandRange = lastMatch.range
+        val textBefore = fullText.substring(0, commandRange.first).trimEnd()
 
-        return if (matchResult != null) {
-            val commandString = matchResult.value
-            Log.d("MyAccessibilityService", "Found command string: $commandString")
-            val parts = commandString.trim().removeSuffix(">").removeSurrounding("{", "}").split(" ")
-            val commandName = parts.firstOrNull() ?: return null
-            val args = parts.drop(1)
+        val inside = lastMatch.groupValues[1].trim()
+        val parts = inside.split(Regex("\\s+")).filter { it.isNotEmpty() }
+        if (parts.isEmpty()) return null
 
-            Log.d("MyAccessibilityService", "Command name: $commandName, Args: $args")
-            val result = when (commandName) {
-                "help" -> getHelpText()
-                "erase" -> {
-                    return "" // Очищаем текстовое поле
-                }
-                else -> {
-                    val commandFunc = findCommand(commandName)
-                    if (commandFunc != null) {
-                        val result = if (args.isEmpty()) {
-                            commandFunc.call() // Вызываем без аргументов
-                        } else {
-                            commandFunc.call(*args.toTypedArray()) // Вызываем с аргументами
-                        }
-                        Log.d("MyAccessibilityService", "Command result: $result")
-                        result?.toString()
+        val cmdName = parts[0].lowercase()
+        val userArgs = parts.drop(1)
+
+        Log.d("Executor", "Команда: $cmdName | Аргументы: $userArgs | Текст слева: '$textBefore'")
+
+        return when (cmdName) {
+            "erase" -> ""
+            "help"  -> getHelpText()
+
+            else -> {
+                val func = findCommand(cmdName) ?: return null
+
+                try {
+                    val resultPy = if (userArgs.isNotEmpty()) {
+                        val args = userArgs.map { PyObject.fromJava(it) }.toTypedArray()
+                        func.call(*args)
                     } else {
-                        Log.d("MyAccessibilityService", "Command function not found: $commandName")
-                        null
+                        func.call(PyObject.fromJava(textBefore))
                     }
+
+                    val result = resultPy?.toString() ?: ""
+
+                    Log.d("Executor", "Результат $cmdName: '$result'")
+                    result
+
+                } catch (e: Throwable) {
+                    Log.e("ExecutorService", "Ошибка команды '$cmdName'", e)
+                    "Ошибка"
                 }
             }
-            if (result != null) {
-                return text.replace(commandString, result)
-            }
-            null
-        } else {
-            null
         }
     }
 
@@ -178,7 +182,7 @@ class ExecutorService : AccessibilityService() {
 
     private fun sendNotification(context: Context, title: String, desc: String) {
         val builder = NotificationCompat.Builder(context, "123")
-            .setSmallIcon(R.mipmap.ic_launcher_monochrome) // Замените на ваш иконку
+            .setSmallIcon(R.mipmap.ic_launcher_monochrome)
             .setContentTitle(title)
             .setContentText(desc)
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
@@ -204,5 +208,15 @@ class ExecutorService : AccessibilityService() {
             }
         }
         return commandsMap
+    }
+
+    companion object {
+        private var instance: ExecutorService? = null
+
+        fun getInstance(): ExecutorService? = instance
+
+        fun reloadScripts() {
+            instance?.loadInternalScripts()
+        }
     }
 }

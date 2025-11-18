@@ -5,4 +5,9 @@
         android:enabled="true"
         android:icon="@drawable/info"
         android:title="@string/information"/>
+    <item
+        android:id="@+id/github"
+        android:enabled="true"
+        android:icon="@drawable/info"
+        android:title="@string/source_code"/>
 </menu>

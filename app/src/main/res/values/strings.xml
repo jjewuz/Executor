@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">Executor</string>
-    <string name="accessibility_service_description">Executor service helps app detect commands and execute it.</string>
+    <string name="accessibility_service_description">Executor service detect commands and execute it.</string>
     <string name="accesibility_settings">Accesibility settings</string>
     <string name="playground">Playground</string>
     <string name="notificationDesc">Notify about service work</string>
@@ -19,4 +19,10 @@
     <string name="scripts_help">Select folder to import custom modules.</string>
     <string name="home">Home</string>
     <string name="information">Information</string>
+    <string name="acces_service">Accessibility Service</string>
+    <string name="acces_desc">We use AccessibilityService API to implement core features such as detecting commands in text fields.\nWe do not collect any private information through this permission</string>
+    <string name="cancel">Cancel</string>
+    <string name="source_code">Source code</string>
+    <string name="site">Visit Executor site for guide</string>
+    <string name="sitebtn">Site</string>
 </resources>

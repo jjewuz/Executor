@@ -100,6 +100,42 @@
                 app:icon="@drawable/accses"
                 android:text="@string/accesibility_settings"/>
 
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_marginTop="10dp"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="@string/site"/>
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/site"
+                android:text="@string/sitebtn"/>
+
+
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                android:hint="gigachat key">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:layout_width="match_parent"
+                    android:id="@+id/textField"
+                    android:layout_height="wrap_content"
+                    />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/save_giga"
+                android:visibility="gone"
+                android:text="Save"/>
+
         </LinearLayout>
 
     </androidx.core.widget.NestedScrollView>

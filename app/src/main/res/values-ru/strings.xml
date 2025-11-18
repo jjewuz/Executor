@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Executor</string>
-    <string name="accessibility_service_description">Сервис приложения помогает наблюдать за текстом и распознавать команды.</string>
+    <string name="accessibility_service_description">Сервис приложения наблюдает за текстом и распознаёт команды.</string>
     <string name="accesibility_settings">Спец. возможности</string>
     <string name="playground">Тестовое поле</string>
     <string name="notificationDesc">Уведомления о работе сервиса</string>
@@ -20,4 +20,10 @@
     <string name="scripts_help">Выберите папку из которой надо загрузить модули.</string>
     <string name="home">Главная</string>
     <string name="information">Информация</string>
+    <string name="acces_service">Сервис доступа</string>
+    <string name="acces_desc">Мы используем AccessibilityService API, что бы в приложении работали основные возможности: распознование команд в полях ввода.\nМы не собираем никакой приватной информации через это разрешение.\n</string>
+    <string name="cancel">Отмена</string>
+    <string name="source_code">Исходный код</string>
+    <string name="site">Посетите сайт Executor для гайда</string>
+    <string name="sitebtn">Сайт</string>
 </resources>

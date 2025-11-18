@@ -6,7 +6,7 @@ buildscript {
         maven { url 'https://jitpack.io' }
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:8.4.2'
+        classpath 'com.android.tools.build:gradle:8.13.1'
         classpath 'org.jetbrains.kotlin:kotlin-gradle-plugin:2.0.0'
         classpath 'com.google.gms:google-services:4.4.2'
         classpath 'com.google.android.gms:oss-licenses-plugin:0.10.6'
@@ -18,5 +18,5 @@ buildscript {
 }
 
 plugins {
-    id 'com.chaquo.python' version '15.0.1' apply false
+    id 'com.chaquo.python' version '16.1.0' apply false
 }

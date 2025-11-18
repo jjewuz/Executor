@@ -3,26 +3,32 @@ import urllib.request
 import json
 
 
-def repeat(*args):
-    number_of_copies = int(args[0])
-    text_to_copy = ' '.join(args[1:])
-    return text_to_copy * number_of_copies
+def uppercase(text):
+    return text.upper()
 
+def lowercase(text):
+    return text.lower()
 
-def uppercase(*args):
-    combined_text = ' '.join(args)
-    return combined_text.upper()
+def reverse(text):
+    return text[::-1]
 
+def count(text):
+    return str(len(text))
+
+def repeat(text, n="2"):
+    return text * int(n)
 
 def info():
-    return "Executor ALPHA v0.0.1 by jjewuz"
+    return "Executor BETA by jjewuz"
 
+def erase():
+    return ""
 
 def randomize(arg1, arg2):
     try:
         num1 = int(arg1)
         num2 = int(arg2)
-        return random.randint(num1, num2)
+        return str(random.randint(num1, num2))
     except ValueError:
         return "Invalid arguments. Please provide numbers."
 
@@ -31,15 +37,8 @@ def summarize(*args):
     total = sum(float(arg) for arg in args)
     return total
 
-
-def count(*args):
-    combined_text = ' '.join(args)
-    return len(combined_text.split())
-
-
-def erase():
-    return ""
-
+def mock(text):
+    return ''.join(c.upper() if random.randint(0,1) else c.lower() for c in text)
 
 def ip():
     try:
@@ -53,14 +52,15 @@ def ip():
     except Exception as e:
         return str(e)
 
-
 COMMANDS = {
     "repeat": repeat,
     "randomize": randomize,
     "summarize": summarize,
     "uppercase": uppercase,
+    "reverse": reverse,
     "erase": erase,
     "count": count,
+    "mock": mock,
     "ip": ip,
     "info": info,
 }

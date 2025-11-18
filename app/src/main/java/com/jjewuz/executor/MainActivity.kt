@@ -4,7 +4,9 @@ import android.Manifest
 import android.app.Activity
 import android.app.NotificationChannel
 import android.app.NotificationManager
+import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
@@ -18,19 +20,18 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.core.os.BuildCompat
-import com.chaquo.python.PyObject
-import com.chaquo.python.Python
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.jjewuz.executor.databinding.ActivityMainBinding
-import com.jjewuz.executor.service.CommandModule
 import com.jjewuz.executor.service.ExecutorService
 import java.io.File
+import androidx.core.content.edit
+import androidx.core.net.toUri
 
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
+    private lateinit var sharedPreferences: SharedPreferences
 
     companion object {
         const val REQUEST_CODE_OPEN_DIRECTORY = 42
@@ -53,14 +54,27 @@ class MainActivity : AppCompatActivity() {
             )
         }
         setSupportActionBar(binding.topAppBar)
+        sharedPreferences = this.getSharedPreferences("keys", Context.MODE_PRIVATE)
 
 
         createNotificationChannel()
 
         binding.accessibility.setOnClickListener {
-            val intent = Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            startActivity(intent)
+
+
+            MaterialAlertDialogBuilder(this)
+                .setTitle(R.string.acces_service)
+                .setIcon(R.drawable.info)
+                .setCancelable(false)
+                .setMessage(R.string.acces_desc)
+                .setPositiveButton("OK") {_, _ ->
+                    val intent = Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                    startActivity(intent)
+                }
+                .setNegativeButton(R.string.cancel) {_, _ ->
+                }
+                .show()
         }
 
         binding.settings.setOnClickListener {
@@ -74,6 +88,19 @@ class MainActivity : AppCompatActivity() {
         binding.scriptLoad.setOnClickListener {
             openDirectory()
         }
+
+        binding.saveGiga.setOnClickListener{
+            sharedPreferences.edit() { putString("giga_key", binding.textField.text.toString()) }
+        }
+
+        binding.site.setOnClickListener {
+            openUrl("https://executor.jjewuz.com")
+        }
+    }
+
+    fun openUrl(url: String) {
+        val intent = Intent(Intent.ACTION_VIEW, url.toUri())
+        startActivity(intent)
     }
 
     private fun openDirectory() {
@@ -152,7 +179,7 @@ class MainActivity : AppCompatActivity() {
                             }
                         }
 
-                        ExecutorService().loadInternalScripts()
+                        ExecutorService.reloadScripts()
                     } catch (e: Exception) {
                         Log.e("MainActivity", "Failed to load script $displayName: ${e.message}")
                     }
@@ -190,6 +217,12 @@ class MainActivity : AppCompatActivity() {
                     .setPositiveButton("OK") {_, _ ->
                     }
                     .show()
+                true
+            }
+            R.id.github -> {
+                val browserIntent = Intent(Intent.ACTION_VIEW,
+                    "https://github.com/jjewuz/Executor".toUri())
+                startActivity(browserIntent)
                 true
             }
             else -> super.onOptionsItemSelected(item)
