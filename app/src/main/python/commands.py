@@ -1,7 +1,24 @@
 import random
 import urllib.request
 import json
+import os
 
+ALIASES_FILE = os.path.join(os.path.dirname(__file__), "aliases.json") if "__file__" in globals() else "aliases.json"
+
+# Загружаем алиасы при старте
+try:
+    with open(ALIASES_FILE, "r", encoding="utf-8") as f:
+        aliases = json.load(f)
+except:
+    aliases = {}
+
+def _save_aliases():
+    """Сохраняет алиасы на диск"""
+    try:
+        with open(ALIASES_FILE, "w", encoding="utf-8") as f:
+            json.dump(aliases, f, ensure_ascii=False, indent=2)
+    except Exception as e:
+        print(f"Ошибка сохранения алиасов: {e}")
 
 def uppercase(text):
     return text.upper()
@@ -52,17 +69,75 @@ def ip():
     except Exception as e:
         return str(e)
 
+def save_alias(name: str, *args):
+    global aliases
+    if not name:
+        return "Ошибка: укажи имя алиаса"
+    text = ' '.join(args)
+    clean_text = (text or "").strip()
+    if not clean_text:
+        return "Ошибка: нет текста для сохранения"
+
+    aliases[name.lower()] = clean_text
+    _save_aliases()
+    return f"Алиас '{name}' сохранён!"
+
+def alias(name: str):
+    global aliases
+    name = name.lower().strip()
+    if name in aliases:
+        return aliases[name]
+    return f"Алиас '{name}' не найден"
+
+def aliases_list():
+    global aliases
+    if not aliases:
+        return "Алиасы пусты"
+    lines = ["Алиасы:"]
+    for name, text in aliases.items():
+        preview = text.replace("\n", "\\n")[:40]
+        if len(text) > 40: preview += "..."
+        lines.append(f"  {name} → {preview}")
+    return "\n".join(lines)
+
+def clear_alias(name: str = None):
+    global aliases
+    if name is None:
+        count = len(aliases)
+        aliases.clear()
+        _save_aliases()
+        return f"Удалено алиасов: {count}"
+
+    name = name.lower().strip()
+    if name in aliases:
+        del aliases[name]
+        _save_aliases()
+        return f"Алиас '{name}' удалён"
+    return f"Алиас '{name}' не найден"
+
+
 COMMANDS = {
-    "repeat": repeat,
-    "randomize": randomize,
-    "summarize": summarize,
-    "uppercase": uppercase,
-    "reverse": reverse,
-    "erase": erase,
-    "count": count,
-    "mock": mock,
-    "ip": ip,
-    "info": info,
+
+    "uppercase": {"func": uppercase, "desc": "All capital letters, accepts text to the left of the command"},
+    "lowercase": {"func": lowercase, "desc": "All lowercase, accepts text to the left of the command"},
+    "reverse":   {"func": reverse,   "desc": "Flips the text to the left of the command"},
+    "count":     {"func": count,     "desc": "Number of characters to the left of the command"},
+    "repeat":    {"func": repeat,    "desc": "Repeats text n times (default 2). Syntax: {repeat text n}"},
+    "mock":      {"func": mock,      "desc": "Turns the text to the left of the command into a meme."},
+    "erase": {"func": erase, "desc": "Cleans all text field"},
+
+    "randomize": {"func": randomize, "desc": "Random number from a to b. Example: {randomize a b}"},
+    "summarize": {"func": summarize, "desc": "Summarize numbers. Example: {summarize n1 n2 n3...}"},
+
+    "al":      {"func": alias,       "desc": "Execute saved alias: {al name}"},
+    "save":       {"func": save_alias,  "desc": "Save text as alias. Example: {save name text}"},
+    "aliases":    {"func": aliases_list,  "desc": "Show all aliases"},
+    "clearalias": {"func": clear_alias,"desc": "Delete one alias or all. {clearalias name} or {clearalias}"},
+
+    "ip":    {"func": ip,    "desc": "Your external IP and country"},
+    "info":  {"func": info,  "desc": "Info about app"},
 }
 
+NAME = "Base"
 AUTHOR = "jjewuz"
+DESCRIPTION = "Built-in Executor commands"

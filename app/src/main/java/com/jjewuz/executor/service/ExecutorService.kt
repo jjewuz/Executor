@@ -15,19 +15,25 @@ import com.chaquo.python.PyObject
 import com.chaquo.python.Python
 import com.jjewuz.executor.R
 import java.io.File
+import java.util.Locale
 
-data class CommandModule(val name: String, val author: String, val commands: Map<String, PyObject>)
+data class CommandInfo(
+    val func: PyObject,
+    val desc: String
+)
+
+data class CommandModule(
+    val name: String,
+    val author: String,
+    val description: String,
+    val commands: Map<String, CommandInfo>
+)
 
 class ExecutorService : AccessibilityService() {
 
     private val py = Python.getInstance()
-    private val builtInModule = CommandModule(
-        "Built-in",
-        "jjewuz",
-        getCommandsMap(py.getModule("commands"))
-    )
-
     private var userModules: MutableList<CommandModule> = mutableListOf()
+    private lateinit var builtInModule: CommandModule
 
     override fun onAccessibilityEvent(event: AccessibilityEvent?) {
         if (event != null) {
@@ -44,47 +50,79 @@ class ExecutorService : AccessibilityService() {
         super.onServiceConnected()
         instance = this
         sendNotification(applicationContext, resources.getString(R.string.serviceStarted), "")
+        val commandsModule = py.getModule("commands")
+        builtInModule = loadModuleFromPyObject(commandsModule, resources.getString(R.string.built_in))
         loadInternalScripts()
     }
 
-    fun loadInternalScripts() {
+    private fun loadModuleFromPyObject(pyModule: PyObject, fallbackName: String): CommandModule {
+        val name = pyModule["NAME"]?.toString() ?: fallbackName
+        val author = pyModule["AUTHOR"]?.toString() ?: resources.getString(R.string.not_specified)
+        val description = pyModule["DESCRIPTION"]?.toString() ?: resources.getString(R.string.no_description)
+
+        val commandsPy = pyModule["COMMANDS"] ?: return CommandModule(name, author, description, emptyMap())
+        val commandsMap = mutableMapOf<String, CommandInfo>()
+
+        val commandsDict = commandsPy.asMap()
+
+        for ((keyPy, valuePy) in commandsDict) {
+            val cmdName = keyPy.toString()
+
+            if (valuePy is PyObject) {
+                try {
+                    val innerDict = valuePy.asMap()
+                    val funcKey = PyObject.fromJava("func")
+                    val descKey = PyObject.fromJava("desc")
+
+                    val funcObj = innerDict[funcKey]
+                    val descObj = innerDict[descKey]
+
+                    if (funcObj != null) {
+                        val desc = descObj?.toString() ?: resources.getString(R.string.no_description)
+                        commandsMap[cmdName] = CommandInfo(funcObj, desc)
+                        continue
+                    }
+                } catch (e: Throwable) {
+                    Log.e("Executor", e.toString())
+                }
+                commandsMap[cmdName] = CommandInfo(valuePy, resources.getString(R.string.no_description))
+            }
+        }
+
+        return CommandModule(name, author, description, commandsMap)
+    }
+
+    private fun loadInternalScripts() {
         val scriptDir = File(filesDir, "scripts").apply { mkdirs() }
         userModules.clear()
 
-        if (scriptDir.listFiles().isNullOrEmpty()) {
-            Log.d("ExecutorService", "No user scripts")
-            return
-        }
+        if (scriptDir.listFiles().isNullOrEmpty()) return
 
         val py = Python.getInstance()
-        val sys = py.getModule("sys")
-        val path = sys["path"]!!
-
-        val scriptPath = scriptDir.absolutePath
-
-        try {
-            path.callAttr("remove", scriptPath)
-        } catch (e: Throwable) {
-        }
-        path.callAttr("append", scriptPath)
+        val sysPath = py.getModule("sys")["path"]!!
+        val dirPath = scriptDir.absolutePath
+        try { sysPath.callAttr("remove", dirPath) } catch (e: Throwable) {}
+        sysPath.callAttr("append", dirPath)
 
         scriptDir.listFiles()
-            ?.filter { it.isFile && it.extension.equals("py", ignoreCase = true) }
+            ?.filter { it.extension.equals("py", ignoreCase = true) }
             ?.forEach { file ->
                 try {
                     val moduleName = file.nameWithoutExtension
                     val module = py.getModule(moduleName)
-
-                    val author = module["AUTHOR"]?.toString() ?: "Unknown"
-                    val commands = getCommandsMap(module)
-
-                    userModules.add(CommandModule(moduleName, author, commands))
-                    Log.d("ExecutorService", "Loaded $moduleName by $author")
+                    val mod = loadModuleFromPyObject(module,
+                        moduleName.replace("_", " ")
+                            .replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.ROOT) else it.toString() })
+                    if (mod.commands.isNotEmpty()) {
+                        userModules.add(mod)
+                    }
+                    Log.d("Executor module", "module ${mod.name} loaded")
                 } catch (e: Throwable) {
-                    Log.e("ExecutorService", "Failed ${file.name}: ${e.message}", e)
+                    Log.e("Executor", "Error loading module ${file.name}", e)
                 }
             }
     }
+
 
     override fun onInterrupt() {
         sendNotification(applicationContext, resources.getString(R.string.serviceStopped), "")
@@ -112,7 +150,8 @@ class ExecutorService : AccessibilityService() {
         val lastMatch = commandPattern.findAll(fullText).lastOrNull() ?: return null
 
         val commandRange = lastMatch.range
-        val textBefore = fullText.substring(0, commandRange.first).trimEnd()
+        val textBefore = fullText.substring(0, commandRange.first)
+        val commandText = lastMatch.value
 
         val inside = lastMatch.groupValues[1].trim()
         val parts = inside.split(Regex("\\s+")).filter { it.isNotEmpty() }
@@ -121,61 +160,93 @@ class ExecutorService : AccessibilityService() {
         val cmdName = parts[0].lowercase()
         val userArgs = parts.drop(1)
 
-        Log.d("Executor", "Команда: $cmdName | Аргументы: $userArgs | Текст слева: '$textBefore'")
-
         return when (cmdName) {
             "erase" -> ""
-            "help"  -> getHelpText()
+            "help"  -> getHelpText(userArgs)
 
             else -> {
-                val func = findCommand(cmdName) ?: return null
+                val cmdInfo = findCommand(cmdName) ?: return null
+
+                var usedLeftText = false  // know if cmd takes left text
+                val resultPy: PyObject?
 
                 try {
-                    val resultPy = if (userArgs.isNotEmpty()) {
+                    resultPy = if (userArgs.isNotEmpty()) {
+                        // with args
                         val args = userArgs.map { PyObject.fromJava(it) }.toTypedArray()
-                        func.call(*args)
+                        cmdInfo.func.call(*args)
                     } else {
                         try {
-                            func.call()
+                            cmdInfo.func.call()
                         } catch (e: Throwable) {
-                            func.call(PyObject.fromJava(textBefore))
+                            val cleanText = textBefore.trimEnd()
+                            if (cleanText.isEmpty()) return null
+                            usedLeftText = true
+                            cmdInfo.func.call(PyObject.fromJava(cleanText))
                         }
                     }
-
-                    val result = resultPy?.toString() ?: ""
-
-                    Log.d("Executor", "Результат $cmdName: '$result'")
-                    result
-
                 } catch (e: Throwable) {
-                    Log.e("ExecutorService", "Ошибка команды '$cmdName'", e)
-                    "Ошибка"
+                    Log.e("Executor", "Command error: $cmdName", e)
+                    return textBefore + "Error"
+                }
+
+                val result = resultPy?.toString() ?: ""
+
+                if (usedLeftText) {
+                    val textToReplace = textBefore
+                    textBefore.dropLast(textToReplace.length) + result
+                } else {
+                    // no left text
+                    textBefore + result
                 }
             }
         }
     }
 
-    private fun getHelpText(): String {
-        val helpText = StringBuilder()
+    private fun getHelpText(args: List<String> = emptyList()): String {
+        val sb = StringBuilder()
 
-        helpText.append("${resources.getString(R.string.available_commands)}:\n\n")
+        if (args.isEmpty()) {
+            sb.append(getString(R.string.help_loaded_modules) + "\n\n")
 
-        helpText.append("${resources.getString(R.string.module)}: ${builtInModule.name}, ${resources.getString(R.string.author)}: ${builtInModule.author}\n")
-        builtInModule.commands.keys.forEach { command ->
-            helpText.append("$command, ")
-        }
+            val allModules = listOf(builtInModule) + userModules
 
-        userModules.forEach { module ->
-            helpText.append("\n${resources.getString(R.string.module)}: ${module.name}, ${resources.getString(R.string.author)}: ${module.author}\n")
-            module.commands.keys.forEach { command ->
-                helpText.append("$command, ")
+            for (module in allModules) {
+                sb.append("•")
+                sb.append(getString(R.string.help_module_title, module.name) + "\n")
+                sb.append(getString(R.string.help_module_desc, module.description) + "\n")
+                sb.append(getString(R.string.help_module_commands_count, module.commands.size) + "\n\n")
+
             }
-        }
 
-        return helpText.toString()
+            sb.append(resources.getString(R.string.help_module))
+            return sb.toString()
+        } else {
+            val query = args.joinToString(" ").lowercase()
+            val allModules = listOf(builtInModule) + userModules
+
+            val module = allModules.find {
+                it.name.lowercase().contains(query) || query in it.name.lowercase()
+            }
+
+            if (module == null) {
+                return getString(R.string.help_module_not_found, query)
+            }
+
+            sb.append(getString(R.string.help_module_title, module.name) + "\n")
+            sb.append(getString(R.string.help_module_author, module.author) + "\n")
+            sb.append(getString(R.string.help_module_desc, module.description) + "\n")
+            sb.append("—".repeat(30) + "\n")
+
+            for ((cmdName, info) in module.commands) {
+                sb.append("$cmdName — ${info.desc}\n")
+            }
+
+            return sb.toString()
+        }
     }
 
-    private fun findCommand(commandName: String): PyObject? {
+    private fun findCommand(commandName: String): CommandInfo? {
         builtInModule.commands[commandName]?.let { return it }
 
         for (module in userModules) {
@@ -201,17 +272,6 @@ class ExecutorService : AccessibilityService() {
             }
             notify(1, builder.build())
         }
-    }
-
-    private fun getCommandsMap(module: PyObject): Map<String, PyObject> {
-        val commandsPyDict = module["COMMANDS"]?.asMap()
-        val commandsMap = mutableMapOf<String, PyObject>()
-        if (commandsPyDict != null) {
-            for ((key, value) in commandsPyDict) {
-                commandsMap[key.toString()] = value
-            }
-        }
-        return commandsMap
     }
 
     companion object {

@@ -10,4 +10,9 @@
         android:enabled="true"
         android:icon="@drawable/info"
         android:title="@string/source_code"/>
+    <item
+        android:id="@+id/site"
+        android:enabled="true"
+        android:icon="@drawable/info"
+        android:title="@string/sitebtn"/>
 </menu>

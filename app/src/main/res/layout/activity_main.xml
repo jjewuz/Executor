@@ -105,13 +105,7 @@
                 android:layout_marginTop="10dp"
                 android:layout_height="wrap_content"
                 android:gravity="center"
-                android:text="@string/site"/>
-
-            <Button
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/site"
-                android:text="@string/sitebtn"/>
+                android:text="@string/to_reload_new_scripts_turn_off_and_then_turn_on_accesibility_service"/>
 
 
 

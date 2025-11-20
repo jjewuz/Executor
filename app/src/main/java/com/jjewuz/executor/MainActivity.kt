@@ -20,12 +20,11 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.net.toUri
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.jjewuz.executor.databinding.ActivityMainBinding
 import com.jjewuz.executor.service.ExecutorService
 import java.io.File
-import androidx.core.content.edit
-import androidx.core.net.toUri
 
 
 class MainActivity : AppCompatActivity() {
@@ -88,14 +87,6 @@ class MainActivity : AppCompatActivity() {
         binding.scriptLoad.setOnClickListener {
             openDirectory()
         }
-
-        binding.saveGiga.setOnClickListener{
-            sharedPreferences.edit() { putString("giga_key", binding.textField.text.toString()) }
-        }
-
-        binding.site.setOnClickListener {
-            openUrl("https://executor.jjewuz.com")
-        }
     }
 
     fun openUrl(url: String) {
@@ -114,12 +105,10 @@ class MainActivity : AppCompatActivity() {
         if (requestCode == REQUEST_CODE_OPEN_DIRECTORY && resultCode == Activity.RESULT_OK) {
             val directoryUri: Uri? = data?.data
             if (directoryUri != null) {
-                // Сохранение разрешений на доступ к папке
                 contentResolver.takePersistableUriPermission(
                     directoryUri,
                     Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
                 )
-                // Теперь можем загрузить скрипты
                 loadUserScripts(directoryUri)
                 Log.d("MainActivity", "Started")
             }
@@ -138,7 +127,6 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        // Добавляем путь к пользовательским скриптам в sys.path
         contentResolver.takePersistableUriPermission(
             directoryUri,
             Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
@@ -213,16 +201,18 @@ class MainActivity : AppCompatActivity() {
                 MaterialAlertDialogBuilder(this)
                     .setTitle(R.string.information)
                     .setIcon(R.drawable.info)
-                    .setMessage("Executor v${BuildConfig.VERSION_NAME}")
+                    .setMessage("Executor v${BuildConfig.VERSION_NAME} \n by jjewuz")
                     .setPositiveButton("OK") {_, _ ->
                     }
                     .show()
                 true
             }
             R.id.github -> {
-                val browserIntent = Intent(Intent.ACTION_VIEW,
-                    "https://github.com/jjewuz/Executor".toUri())
-                startActivity(browserIntent)
+                openUrl("https://github.com/jjewuz/Executor")
+                true
+            }
+            R.id.site -> {
+                openUrl("https://executor.jjewuz.com")
                 true
             }
             else -> super.onOptionsItemSelected(item)

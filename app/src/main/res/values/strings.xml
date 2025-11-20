@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">Executor</string>
-    <string name="accessibility_service_description">Executor service detect commands and execute it.</string>
+    <string name="accessibility_service_description">Executor service detect commands and execute it.\nVisit app site: executor.jjewuz.com\n</string>
     <string name="accesibility_settings">Accesibility settings</string>
     <string name="playground">Playground</string>
     <string name="notificationDesc">Notify about service work</string>
@@ -25,4 +25,15 @@
     <string name="source_code">Source code</string>
     <string name="site">Visit Executor site for guide</string>
     <string name="sitebtn">Site</string>
+    <string name="no_description">No description</string>
+    <string name="not_specified">Not specified</string>
+    <string name="help_module">More details: {help module name}</string>
+    <string name="help_module_not_found">Module «%1$s» not found</string>
+    <string name="help_module_title">Module: %1$s</string>
+    <string name="help_module_author">Author: %1$s</string>
+    <string name="help_module_desc">%1$s</string>
+    <string name="help_module_commands_count">Commands count: %1$d</string>
+    <string name="help_loaded_modules">Executor — loaded modules:</string>
+    <string name="to_reload_new_scripts_turn_off_and_then_turn_on_accesibility_service">To reload new scripts, turn off and then turn on accesibility service.</string>
+
 </resources>
