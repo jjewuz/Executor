@@ -5,7 +5,6 @@ import os
 
 ALIASES_FILE = os.path.join(os.path.dirname(__file__), "aliases.json") if "__file__" in globals() else "aliases.json"
 
-# Загружаем алиасы при старте
 try:
     with open(ALIASES_FILE, "r", encoding="utf-8") as f:
         aliases = json.load(f)
@@ -13,7 +12,6 @@ except:
     aliases = {}
 
 def _save_aliases():
-    """Сохраняет алиасы на диск"""
     try:
         with open(ALIASES_FILE, "w", encoding="utf-8") as f:
             json.dump(aliases, f, ensure_ascii=False, indent=2)
@@ -63,8 +61,8 @@ def ip():
         with urllib.request.urlopen(url) as response:
             data = response.read().decode()
             json_data = json.loads(data)
-            ip = json_data.get("ip", "не найден")
-            country = json_data.get("country", "не найдена")
+            ip = json_data.get("ip", "not found")
+            country = json_data.get("country", "not found")
             return f"IP: {ip}, {country}"
     except Exception as e:
         return str(e)
@@ -72,28 +70,28 @@ def ip():
 def save_alias(name: str, *args):
     global aliases
     if not name:
-        return "Ошибка: укажи имя алиаса"
+        return "Error: specify name for alias"
     text = ' '.join(args)
     clean_text = (text or "").strip()
     if not clean_text:
-        return "Ошибка: нет текста для сохранения"
+        return "Error: no alias text"
 
     aliases[name.lower()] = clean_text
     _save_aliases()
-    return f"Алиас '{name}' сохранён!"
+    return f"Alias '{name}' saved!"
 
 def alias(name: str):
     global aliases
     name = name.lower().strip()
     if name in aliases:
         return aliases[name]
-    return f"Алиас '{name}' не найден"
+    return f"Alias '{name}' not found"
 
 def aliases_list():
     global aliases
     if not aliases:
-        return "Алиасы пусты"
-    lines = ["Алиасы:"]
+        return "No aliases"
+    lines = ["Aliases:"]
     for name, text in aliases.items():
         preview = text.replace("\n", "\\n")[:40]
         if len(text) > 40: preview += "..."
@@ -106,14 +104,15 @@ def clear_alias(name: str = None):
         count = len(aliases)
         aliases.clear()
         _save_aliases()
-        return f"Удалено алиасов: {count}"
+        return f"Aliased deleted: {count}"
 
     name = name.lower().strip()
     if name in aliases:
         del aliases[name]
         _save_aliases()
-        return f"Алиас '{name}' удалён"
-    return f"Алиас '{name}' не найден"
+        return f"Alias '{name}' deleted"
+    return f"Alias '{name}' not found"
+
 
 
 COMMANDS = {

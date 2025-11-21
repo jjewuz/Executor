@@ -92,6 +92,8 @@ class ExecutorService : AccessibilityService() {
         return CommandModule(name, author, description, commandsMap)
     }
 
+
+
     private fun loadInternalScripts() {
         val scriptDir = File(filesDir, "scripts").apply { mkdirs() }
         userModules.clear()
@@ -257,7 +259,7 @@ class ExecutorService : AccessibilityService() {
 
     private fun sendNotification(context: Context, title: String, desc: String) {
         val builder = NotificationCompat.Builder(context, "123")
-            .setSmallIcon(R.mipmap.ic_launcher_monochrome)
+            .setSmallIcon(R.drawable.icon)
             .setContentTitle(title)
             .setContentText(desc)
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
