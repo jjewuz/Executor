@@ -1,9 +1,5 @@
 # Executor
 
-### Actual version: 0.4 BETA
-
-#### Developed by jjewuz
-
 Executor is a next-generation Android application that combines technological sophistication and speed. The core mechanic is based on commands executed directly during input. The user doesn't need to open additional menus, press buttons, or switch between functions - just write a command in a special format, and the app will execute it instantly. Works in any text field on Android system.
 
 [Get it on Google Play](https://play.google.com/store/apps/details?id=com.jjewuz.executor)
