@@ -241,7 +241,7 @@ def ip():
     except Exception as e:
         return str(e)
 ```
-If your team assumes the use of the text on the left outside the command, specify `text` in the arguments. Example:
+If your command assumes the use of the text on the left outside the command, specify `text` in the arguments. Example:
 
 ```python
 def lowercase(text):
