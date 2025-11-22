@@ -283,3 +283,5 @@ Old modules are compatible with the current version, but it's better to adapt th
 ## Other
 
 [Privacy Policy](https://executor.jjewuz.com/en/privacy-policy.html)
+
+The code and program are licensed under the Apache 2.0 License.
