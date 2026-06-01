@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/nav_home">
+
+    <fragment
+        android:id="@+id/nav_home"
+        android:name="com.jjewuz.executor.HomeFragment"
+        android:label="@string/home" />
+
+    <fragment
+        android:id="@+id/nav_pip"
+        android:name="com.jjewuz.executor.PipFragment"
+        android:label="@string/pip_title" />
+
+    <fragment
+        android:id="@+id/nav_editor"
+        android:name="com.jjewuz.executor.EditorFragment"
+        android:label="@string/nav_editor" />
+
+    <fragment
+        android:id="@+id/nav_modules"
+        android:name="com.jjewuz.executor.ModulesFragment"
+        android:label="@string/nav_modules" />
+
+    <fragment
+        android:id="@+id/nav_docs"
+        android:name="com.jjewuz.executor.DocsFragment"
+        android:label="@string/nav_docs" />
+
+</navigation>

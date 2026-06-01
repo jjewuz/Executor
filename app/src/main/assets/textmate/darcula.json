@@ -1,0 +1,58 @@
+{
+  "name": "Darcula",
+  "type": "dark",
+  "colors": {
+    "editor.background": "#2B2B2B",
+    "editor.foreground": "#A9B7C6",
+    "editor.selectionBackground": "#214283",
+    "editor.lineHighlightBackground": "#323232",
+    "editorLineNumber.foreground": "#606366",
+    "editorCursor.foreground": "#BBBBBB"
+  },
+  "tokenColors": [
+    {
+      "scope": ["comment", "comment.line", "comment.block"],
+      "settings": { "foreground": "#808080", "fontStyle": "italic" }
+    },
+    {
+      "scope": ["keyword", "keyword.control", "keyword.operator", "storage"],
+      "settings": { "foreground": "#CC7832", "fontStyle": "bold" }
+    },
+    {
+      "scope": ["constant.language"],
+      "settings": { "foreground": "#CC7832" }
+    },
+    {
+      "scope": ["string", "string.quoted"],
+      "settings": { "foreground": "#6A8759" }
+    },
+    {
+      "scope": ["constant.character.escape"],
+      "settings": { "foreground": "#CC7832" }
+    },
+    {
+      "scope": ["meta.embedded"],
+      "settings": { "foreground": "#A9B7C6" }
+    },
+    {
+      "scope": ["constant.numeric"],
+      "settings": { "foreground": "#6897BB" }
+    },
+    {
+      "scope": ["entity.name.function"],
+      "settings": { "foreground": "#FFC66D" }
+    },
+    {
+      "scope": ["entity.name.type", "entity.name.class"],
+      "settings": { "foreground": "#FDBF60" }
+    },
+    {
+      "scope": ["support.function.builtin"],
+      "settings": { "foreground": "#8888C6" }
+    },
+    {
+      "scope": ["entity.name.function.decorator"],
+      "settings": { "foreground": "#BBB529" }
+    }
+  ]
+}
