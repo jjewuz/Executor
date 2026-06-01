@@ -19,4 +19,8 @@
     <string name="scripts_help">Wählen Sie einen Ordner, um benutzerdefinierte Module zu importieren.</string>
     <string name="home">Startseite</string>
     <string name="information">Informationen</string>
+    <string name="reload_modules">Module neu laden</string>
+    <string name="reload_modules_desc">Module neu laden ohne den Barrierefreiheitsdienst neu zu starten.</string>
+    <string name="modules_reloaded">Module neu geladen</string>
+    <string name="service_not_running">Barrierefreiheitsdienst läuft nicht</string>
 </resources>

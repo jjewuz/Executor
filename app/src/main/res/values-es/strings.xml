@@ -19,4 +19,8 @@
     <string name="scripts_help">Selecciona una carpeta para importar módulos personalizados.</string>
     <string name="home">Inicio</string>
     <string name="information">Información</string>
+    <string name="reload_modules">Recargar módulos</string>
+    <string name="reload_modules_desc">Recarga los módulos sin reiniciar el servicio de accesibilidad.</string>
+    <string name="modules_reloaded">Módulos recargados</string>
+    <string name="service_not_running">El servicio de accesibilidad no está en ejecución</string>
 </resources>

@@ -35,6 +35,15 @@
             </intent-filter>
         </activity>
 
+        <activity
+            android:name=".DocDetailActivity"
+            android:exported="false"
+            android:parentActivityName=".MainActivity" />
+
+        <activity
+            android:name=".CodeEditorActivity"
+            android:exported="false" />
+
         <service
             android:name=".service.ExecutorService"
             android:exported="true"

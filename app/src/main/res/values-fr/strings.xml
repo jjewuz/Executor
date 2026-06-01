@@ -19,4 +19,8 @@
     <string name="scripts_help">Sélectionnez un dossier pour importer des modules personnalisés.</string>
     <string name="home">Accueil</string>
     <string name="information">Informations</string>
+    <string name="reload_modules">Recharger les modules</string>
+    <string name="reload_modules_desc">Rechargez les modules sans redémarrer le service d\'accessibilité.</string>
+    <string name="modules_reloaded">Modules rechargés</string>
+    <string name="service_not_running">Le service d\'accessibilité n\'est pas en cours d\'exécution</string>
 </resources>

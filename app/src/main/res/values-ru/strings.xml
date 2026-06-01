@@ -36,5 +36,106 @@
     <string name="help_module_commands_count">Команд: %1$d</string>
     <string name="help_loaded_modules">Executor — загруженные модули:</string>
     <string name="to_reload_new_scripts_turn_off_and_then_turn_on_accesibility_service">Чтобы загрузить новые модули - выключите и включите сервис спец. возможностей.</string>
+    <string name="reload_modules">Перезагрузить модули</string>
+    <string name="reload_modules_desc">Перезагрузить модули без перезапуска сервиса специальных возможностей.</string>
+    <string name="modules_reloaded">Модули перезагружены</string>
+    <string name="service_not_running">Сервис специальных возможностей не запущен</string>
+    <string name="no_scripts_dir">Папка не выбрана. Сначала нажмите «Загрузить модули».</string>
+    <string name="pip_title">Менеджер пакетов</string>
+    <string name="pip_manager">Менеджер пакетов</string>
+    <string name="pip_warning">Поддерживаются только pure Python пакеты (без C-расширений). Например: requests, beautifulsoup4, pydantic.</string>
+    <string name="pip_package_hint">Название пакета</string>
+    <string name="pip_install">Установить</string>
+    <string name="pip_output">Вывод:</string>
+    <string name="pip_installing">Устанавливаю %1$s…</string>
+    <string name="nav_modules">Модули</string>
+    <string name="module_download">Скачать</string>
+    <string name="module_update">Обновить</string>
+    <string name="module_versions">v%1$s</string>
+    <string name="module_downloaded">%1$s скачан</string>
+    <string name="module_download_error">Ошибка загрузки: %1$s</string>
+    <string name="modules_load_error">Не удалось загрузить модули: %1$s</string>
+    <string name="nav_editor">Редактор</string>
+    <string name="nav_docs">Документация</string>
+    <string name="editor_scripts_folder">Скрипты</string>
+    <string name="editor_empty_folder">Нет .py файлов</string>
+    <string name="editor_new_file">Новый файл</string>
+    <string name="editor_new_file_hint">Имя файла (без .py)</string>
+    <string name="editor_create">Создать</string>
+    <string name="editor_save">Сохранить</string>
+    <string name="editor_saved">Сохранено и перезагружено</string>
+    <string name="editor_save_error">Не удалось создать файл</string>
+    <string name="editor_exit_title">Несохранённые изменения</string>
+    <string name="editor_exit_message">Сохранить перед закрытием?</string>
+    <string name="editor_save_exit">Сохранить и закрыть</string>
+    <string name="editor_discard">Не сохранять</string>
+
+    <string name="cmd_notify_desc">Отправить уведомление. Использование: {notify текст} или текст {notify}></string>
+    <string name="cmd_error_title">Ошибка в команде «%1$s»</string>
+    <string name="module_load_error_title">Не удалось загрузить модуль «%1$s»</string>
+    <string name="module_no_commands_title">В модуле «%1$s» нет команд</string>
+    <string name="module_no_commands_desc">Словарь COMMANDS отсутствует или пуст. Модуль не загружен.</string>
+
+    <!-- Doc titles -->
+    <string name="doc_title_syntax">Синтаксис команд</string>
+    <string name="doc_title_aliases">Алиасы</string>
+    <string name="doc_title_builtin">Встроенные команды</string>
+    <string name="doc_title_modules">Написание модулей</string>
+    <string name="doc_title_commands_format">Формат COMMANDS</string>
+    <string name="doc_title_packages">Установка Python-пакетов</string>
+    <string name="doc_title_tips">Советы и хитрости</string>
+
+    <!-- Doc: syntax -->
+    <string name="doc_syntax_1">Команды вводятся прямо в любое текстовое поле. Формат:</string>
+    <string name="doc_syntax_2">Команда должна быть обёрнута в фигурные скобки { } и завершаться символом &gt;. Всё, что стоит до команды, остаётся без изменений — блок команды заменяется результатом.</string>
+    <string name="doc_syntax_3">Пример — перевод текста в верхний регистр:</string>
+    <string name="doc_syntax_4">Результат:</string>
+    <string name="doc_syntax_5">Если команда вызвана без аргументов, она попытается использовать текст слева от себя как входные данные:</string>
+    <string name="doc_syntax_6">Результат:</string>
+
+    <!-- Doc: builtin -->
+    <string name="doc_builtin_1">Все встроенные команды, доступные без дополнительных модулей:</string>
+    <string name="doc_builtin_examples_title">Примеры:</string>
+    <string name="doc_builtin_erase_title">━━ erase ━━</string>
+    <string name="doc_builtin_erase_desc">Полностью очищает текстовое поле.</string>
+    <string name="doc_builtin_erase_result">Результат: пустое поле.</string>
+    <string name="doc_builtin_help_title">━━ help ━━</string>
+    <string name="doc_builtin_help_desc">С названием модуля — показывает все команды этого модуля с описаниями.</string>
+    <string name="doc_aliases_1">Алиасы позволяют сохранить любой текст под коротким именем и вставлять его одной командой.</string>
+    <string name="doc_aliases_2">Использование алиаса в любом месте:</string>
+    <string name="doc_aliases_3">Удобно для подписей, шаблонов, часто вводимых фраз:</string>
+    <string name="doc_aliases_4">Управление алиасами:</string>
+
+    <!-- Doc: modules -->
+    <string name="doc_modules_1">Модули — это обычные .py файлы, которые нужно положить в папку и импортировать через кнопку «Загрузить модули» на главном экране.</string>
+    <string name="doc_modules_2">Каждый модуль должен содержать как минимум NAME и COMMANDS на верхнем уровне. AUTHOR и DESCRIPTION необязательны, но желательны.</string>
+    <string name="doc_modules_3">После сохранения файла в папку со скриптами нажмите «Перезагрузить модули» на главном экране (сервис специальных возможностей должен быть запущен).</string>
+    <string name="doc_modules_4">Затем проверьте в любом текстовом поле:</string>
+    <string name="doc_modules_5">Результат: Hello, World!</string>
+
+    <!-- Doc: commands format -->
+    <string name="doc_fmt_1">Поддерживаются два формата объявления команд.</string>
+    <string name="doc_fmt_full_title">━━ Формат 1: полный (с описанием) ━━</string>
+    <string name="doc_fmt_short_title">━━ Формат 2: сокращённый (только функция) ━━</string>
+    <string name="doc_fmt_2">Формат 2 работает так же, но команда не будет иметь описания в {help}&gt;.</string>
+    <string name="doc_fmt_args_title">━━ Передача аргументов ━━</string>
+    <string name="doc_fmt_3">Если пользователь указывает аргументы после названия команды, они передаются позиционно в вашу функцию:</string>
+    <string name="doc_fmt_4">Если аргументы не указаны, Executor сначала пробует вызвать функцию без аргументов. Если это не удаётся — передаёт текст слева от команды первым аргументом:</string>
+
+    <!-- Doc: packages -->
+    <string name="doc_pkg_1">Откройте вкладку «Менеджер пакетов», введите название пакета и нажмите «Установить».</string>
+    <string name="doc_pkg_2">Поддерживаются только чистые Python-пакеты — без скомпилированных C-расширений. Эти работают:</string>
+    <string name="doc_pkg_3">Эти НЕ будут работать (требуют компиляции C):</string>
+    <string name="doc_pkg_4">После установки перезагрузите модуль через «Перезагрузить модули», чтобы он смог импортировать пакет.</string>
+
+    <!-- Doc: tips -->
+    <string name="doc_tips_chain_title">━━ Цепочка команд ━━</string>
+    <string name="doc_tips_chain">Команды обнаруживаются слева направо. Можно использовать результат одной команды как вход для другой, размещая команды последовательно.</string>
+    <string name="doc_tips_naming_title">━━ Именование модулей ━━</string>
+    <string name="doc_tips_naming">Имя файла становится именем Python-модуля. Используйте только буквы, цифры и подчёркивания — без пробелов и дефисов.</string>
+    <string name="doc_tips_debug_title">━━ Отладка ━━</string>
+    <string name="doc_tips_debug">Если команда возвращает «Error», проверьте Android logcat с тегом Executor — там будет полный traceback от Python.</string>
+    <string name="doc_tips_service_title">━━ Сервис должен быть запущен ━━</string>
+    <string name="doc_tips_service">Команды работают только когда сервис специальных возможностей Executor активен. Включите его в Настройки → Специальные возможности → Executor.</string>
 
 </resources>

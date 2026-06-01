@@ -19,4 +19,8 @@
 <string name="scripts_help">اختر المجلد لاستيراد الوحدات المخصصة.</string>
 <string name="home">الصفحة الرئيسية</string>
 <string name="information">معلومات</string>
+<string name="reload_modules">إعادة تحميل الوحدات</string>
+<string name="reload_modules_desc">إعادة تحميل الوحدات دون إعادة تشغيل خدمة الوصول.</string>
+<string name="modules_reloaded">تم إعادة تحميل الوحدات</string>
+<string name="service_not_running">خدمة الوصول لا تعمل</string>
 </resources>

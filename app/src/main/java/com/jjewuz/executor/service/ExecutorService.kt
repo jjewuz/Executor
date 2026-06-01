@@ -5,6 +5,8 @@ import android.accessibilityservice.AccessibilityService
 import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.view.accessibility.AccessibilityEvent
 import android.view.accessibility.AccessibilityNodeInfo
@@ -35,6 +37,9 @@ class ExecutorService : AccessibilityService() {
     private var userModules: MutableList<CommandModule> = mutableListOf()
     private lateinit var builtInModule: CommandModule
 
+    private var isSetting = false
+    private val handler = Handler(Looper.getMainLooper())
+
     override fun onAccessibilityEvent(event: AccessibilityEvent?) {
         if (event != null) {
             if (event.eventType == AccessibilityEvent.TYPE_VIEW_TEXT_CHANGED ||
@@ -50,8 +55,17 @@ class ExecutorService : AccessibilityService() {
         super.onServiceConnected()
         instance = this
         sendNotification(applicationContext, resources.getString(R.string.serviceStarted), "")
+        addPipPackagesToPath()
         val commandsModule = py.getModule("commands")
-        builtInModule = loadModuleFromPyObject(commandsModule, resources.getString(R.string.built_in))
+        val loadedModule = loadModuleFromPyObject(commandsModule, resources.getString(R.string.built_in))
+        // merge Kotlin-native commands into the built-in module so they appear in {help}
+        val kotlinCommands = mapOf(
+            "notify" to CommandInfo(
+                func = PyObject.fromJava("__kotlin__"),
+                desc = resources.getString(R.string.cmd_notify_desc)
+            )
+        )
+        builtInModule = loadedModule.copy(commands = loadedModule.commands + kotlinCommands)
         loadInternalScripts()
     }
 
@@ -60,32 +74,39 @@ class ExecutorService : AccessibilityService() {
         val author = pyModule["AUTHOR"]?.toString() ?: resources.getString(R.string.not_specified)
         val description = pyModule["DESCRIPTION"]?.toString() ?: resources.getString(R.string.no_description)
 
-        val commandsPy = pyModule["COMMANDS"] ?: return CommandModule(name, author, description, emptyMap())
+        val commandsPy = pyModule["COMMANDS"]
+        if (commandsPy == null) {
+            Log.e("Executor", "Module '$name' has no COMMANDS dict")
+            return CommandModule(name, author, description, emptyMap())
+        }
         val commandsMap = mutableMapOf<String, CommandInfo>()
 
-        val commandsDict = commandsPy.asMap()
+        val commandsDict = try {
+            commandsPy.asMap()
+        } catch (e: Throwable) {
+            Log.e("Executor", "Module '$name': failed to read COMMANDS map: ${e.message}")
+            return CommandModule(name, author, description, emptyMap())
+        }
 
         for ((keyPy, valuePy) in commandsDict) {
             val cmdName = keyPy.toString()
-
-            if (valuePy is PyObject) {
-                try {
-                    val innerDict = valuePy.asMap()
-                    val funcKey = PyObject.fromJava("func")
-                    val descKey = PyObject.fromJava("desc")
-
-                    val funcObj = innerDict[funcKey]
-                    val descObj = innerDict[descKey]
-
-                    if (funcObj != null) {
-                        val desc = descObj?.toString() ?: resources.getString(R.string.no_description)
-                        commandsMap[cmdName] = CommandInfo(funcObj, desc)
-                        continue
-                    }
-                } catch (e: Throwable) {
-                    Log.e("Executor", e.toString())
+            try {
+                // use Python's dict.get() — avoids PyObject Java key-equality issues
+                val funcObj = valuePy.callAttr("get", "func")
+                if (funcObj != null) {
+                    val descObj = valuePy.callAttr("get", "desc")
+                    val desc = descObj?.toString() ?: resources.getString(R.string.no_description)
+                    commandsMap[cmdName] = CommandInfo(funcObj, desc)
+                    continue
                 }
+            } catch (e: Throwable) {
+                // value is a direct function reference, not {"func": ..., "desc": ...}
+            }
+            // fallback: value itself is the callable
+            try {
                 commandsMap[cmdName] = CommandInfo(valuePy, resources.getString(R.string.no_description))
+            } catch (e: Throwable) {
+                Log.e("Executor", "Skipping command $cmdName: ${e.message}")
             }
         }
 
@@ -94,6 +115,20 @@ class ExecutorService : AccessibilityService() {
 
 
 
+    private fun addPipPackagesToPath() {
+        try {
+            val pipDir = File(filesDir, "pip-packages")
+            if (pipDir.exists()) {
+                val sysPath = py.getModule("sys")["path"]!!
+                val dirPath = pipDir.absolutePath
+                try { sysPath.callAttr("remove", dirPath) } catch (_: Throwable) {}
+                sysPath.callAttr("insert", 0, dirPath)
+            }
+        } catch (e: Throwable) {
+            Log.e("Executor", "Failed to add pip-packages to path", e)
+        }
+    }
+
     private fun loadInternalScripts() {
         val scriptDir = File(filesDir, "scripts").apply { mkdirs() }
         userModules.clear()
@@ -101,26 +136,48 @@ class ExecutorService : AccessibilityService() {
         if (scriptDir.listFiles().isNullOrEmpty()) return
 
         val py = Python.getInstance()
-        val sysPath = py.getModule("sys")["path"]!!
+        val sys = py.getModule("sys")
+        val sysPath = sys["path"]!!
+        val sysModules = sys["modules"]!!
         val dirPath = scriptDir.absolutePath
         try { sysPath.callAttr("remove", dirPath) } catch (e: Throwable) {}
         sysPath.callAttr("append", dirPath)
+
+        // make the import system aware of new / changed files on disk
+        try { py.getModule("importlib").callAttr("invalidate_caches") } catch (e: Throwable) {}
 
         scriptDir.listFiles()
             ?.filter { it.extension.equals("py", ignoreCase = true) }
             ?.forEach { file ->
                 try {
                     val moduleName = file.nameWithoutExtension
+                    // drop cached version so edited file content is re-read
+                    try { sysModules.callAttr("pop", moduleName, null) } catch (e: Throwable) {}
                     val module = py.getModule(moduleName)
                     val mod = loadModuleFromPyObject(module,
                         moduleName.replace("_", " ")
                             .replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.ROOT) else it.toString() })
                     if (mod.commands.isNotEmpty()) {
                         userModules.add(mod)
+                        Log.d("Executor module", "module ${mod.name} loaded with ${mod.commands.size} commands")
+                    } else {
+                        Log.w("Executor module", "module ${mod.name} (${file.name}) has no commands — skipped")
+                        sendNotification(
+                            applicationContext,
+                            resources.getString(R.string.module_no_commands_title, file.name),
+                            resources.getString(R.string.module_no_commands_desc)
+                        )
                     }
-                    Log.d("Executor module", "module ${mod.name} loaded")
                 } catch (e: Throwable) {
                     Log.e("Executor", "Error loading module ${file.name}", e)
+                    val errorMsg = e.message?.substringAfterLast(": ")?.takeIf { it.isNotBlank() }
+                        ?: e.message
+                        ?: e.toString()
+                    sendNotification(
+                        applicationContext,
+                        resources.getString(R.string.module_load_error_title, file.name),
+                        errorMsg
+                    )
                 }
             }
     }
@@ -131,13 +188,17 @@ class ExecutorService : AccessibilityService() {
     }
 
     private fun processNode(root: AccessibilityNodeInfo) {
+        if (isSetting) return
+
         if (root.className == "android.widget.EditText" && root.isEditable) {
             root.text?.toString()?.let { text ->
                 processText(text)?.let { newText ->
                     val args = Bundle().apply {
                         putCharSequence(AccessibilityNodeInfo.ACTION_ARGUMENT_SET_TEXT_CHARSEQUENCE, newText)
                     }
+                    isSetting = true
                     root.performAction(AccessibilityNodeInfo.ACTION_SET_TEXT, args)
+                    handler.postDelayed({ isSetting = false }, 300)
                 }
             }
         }
@@ -165,9 +226,21 @@ class ExecutorService : AccessibilityService() {
         return when (cmdName) {
             "erase" -> ""
             "help"  -> getHelpText(userArgs)
+            "notify" -> {
+                val message = if (userArgs.isNotEmpty()) {
+                    userArgs.joinToString(" ")
+                } else {
+                    textBefore.trim().takeIf { it.isNotEmpty() } ?: return null
+                }
+                sendNotification(applicationContext, message, "")
+                textBefore
+            }
 
             else -> {
-                val cmdInfo = findCommand(cmdName) ?: return null
+                val cmdInfo = findCommand(cmdName) ?: run {
+                    val aliasValue = lookupAlias(cmdName) ?: return null
+                    return textBefore + aliasValue
+                }
 
                 var usedLeftText = false  // know if cmd takes left text
                 val resultPy: PyObject?
@@ -189,6 +262,14 @@ class ExecutorService : AccessibilityService() {
                     }
                 } catch (e: Throwable) {
                     Log.e("Executor", "Command error: $cmdName", e)
+                    val errorMsg = e.message?.substringAfterLast(": ")?.takeIf { it.isNotBlank() }
+                        ?: e.message
+                        ?: e.toString()
+                    sendNotification(
+                        applicationContext,
+                        resources.getString(R.string.cmd_error_title, cmdName),
+                        errorMsg
+                    )
                     return textBefore + "Error"
                 }
 
@@ -248,6 +329,15 @@ class ExecutorService : AccessibilityService() {
         }
     }
 
+    private fun lookupAlias(name: String): String? {
+        return try {
+            val aliases = py.getModule("commands")["aliases"] ?: return null
+            aliases.callAttr("get", name)?.toString()
+        } catch (e: Throwable) {
+            null
+        }
+    }
+
     private fun findCommand(commandName: String): CommandInfo? {
         builtInModule.commands[commandName]?.let { return it }
 
@@ -263,6 +353,10 @@ class ExecutorService : AccessibilityService() {
             .setContentTitle(title)
             .setContentText(desc)
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+
+        if (desc.isNotBlank()) {
+            builder.setStyle(NotificationCompat.BigTextStyle().bigText(desc))
+        }
 
         with(NotificationManagerCompat.from(context)) {
             if (ActivityCompat.checkSelfPermission(

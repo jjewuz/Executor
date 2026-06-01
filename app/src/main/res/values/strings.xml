@@ -35,5 +35,106 @@
     <string name="help_module_commands_count">Commands count: %1$d</string>
     <string name="help_loaded_modules">Executor — loaded modules:</string>
     <string name="to_reload_new_scripts_turn_off_and_then_turn_on_accesibility_service">To reload new scripts, turn off and then turn on accesibility service.</string>
+    <string name="reload_modules">Reload modules</string>
+    <string name="reload_modules_desc">Reload modules without restarting the accessibility service.</string>
+    <string name="modules_reloaded">Modules reloaded</string>
+    <string name="service_not_running">Accessibility service is not running</string>
+    <string name="no_scripts_dir">No scripts folder selected yet. Use \"Load modules\" first.</string>
+    <string name="pip_title">Package manager</string>
+    <string name="pip_manager">Package manager</string>
+    <string name="pip_warning">Only pure Python packages are supported (no C extensions). Examples: requests, beautifulsoup4, pydantic.</string>
+    <string name="pip_package_hint">Package name</string>
+    <string name="pip_install">Install</string>
+    <string name="pip_output">Output:</string>
+    <string name="pip_installing">Installing %1$s…</string>
+    <string name="nav_modules">Modules</string>
+    <string name="module_download">Download</string>
+    <string name="module_update">Update</string>
+    <string name="module_versions">v%1$s</string>
+    <string name="module_downloaded">%1$s downloaded</string>
+    <string name="module_download_error">Download failed: %1$s</string>
+    <string name="modules_load_error">Failed to load modules: %1$s</string>
+    <string name="nav_editor">Editor</string>
+    <string name="nav_docs">Docs</string>
+    <string name="editor_scripts_folder">Scripts</string>
+    <string name="editor_empty_folder">No .py files here</string>
+    <string name="editor_new_file">New file</string>
+    <string name="editor_new_file_hint">File name (without .py)</string>
+    <string name="editor_create">Create</string>
+    <string name="editor_save">Save</string>
+    <string name="editor_saved">Saved and reloaded</string>
+    <string name="editor_save_error">Failed to create file</string>
+    <string name="editor_exit_title">Unsaved changes</string>
+    <string name="editor_exit_message">Save before closing?</string>
+    <string name="editor_save_exit">Save &amp; close</string>
+    <string name="editor_discard">Discard</string>
+
+    <string name="cmd_notify_desc">Send a notification. Usage: {notify text} or text {notify}></string>
+    <string name="cmd_error_title">Error in command «%1$s»</string>
+    <string name="module_load_error_title">Failed to load module «%1$s»</string>
+    <string name="module_no_commands_title">Module «%1$s» has no commands</string>
+    <string name="module_no_commands_desc">COMMANDS dictionary is missing or empty. Module not loaded.</string>
+
+    <!-- Doc titles -->
+    <string name="doc_title_syntax">Command Syntax</string>
+    <string name="doc_title_aliases">Aliases</string>
+    <string name="doc_title_builtin">Built-in Commands</string>
+    <string name="doc_title_modules">Writing Modules</string>
+    <string name="doc_title_commands_format">COMMANDS Format</string>
+    <string name="doc_title_packages">Installing Python Packages</string>
+    <string name="doc_title_tips">Tips &amp; Tricks</string>
+
+    <!-- Doc: syntax -->
+    <string name="doc_syntax_1">Commands are typed directly inside any text field. The format is:</string>
+    <string name="doc_syntax_2">The command must be wrapped in curly braces { } and followed by &gt;. Everything before the command stays as-is, the command block is replaced with the result.</string>
+    <string name="doc_syntax_3">Example — convert text to uppercase:</string>
+    <string name="doc_syntax_4">Result:</string>
+    <string name="doc_syntax_5">If the command takes no arguments, it will try to use the text to the left of it as input:</string>
+    <string name="doc_syntax_6">Result:</string>
+
+    <!-- Doc: builtin -->
+    <string name="doc_builtin_1">All built-in commands available without any modules:</string>
+    <string name="doc_builtin_examples_title">Examples:</string>
+    <string name="doc_builtin_erase_title">━━ erase ━━</string>
+    <string name="doc_builtin_erase_desc">Clears the entire text field.</string>
+    <string name="doc_builtin_erase_result">Result: empty field.</string>
+    <string name="doc_builtin_help_title">━━ help ━━</string>
+    <string name="doc_builtin_help_desc">With a module name — shows all commands in that module with descriptions.</string>
+    <string name="doc_aliases_1">Aliases let you save any text under a short name and insert it with one command.</string>
+    <string name="doc_aliases_2">Use the alias anywhere:</string>
+    <string name="doc_aliases_3">Useful for signatures, frequently typed phrases, templates:</string>
+    <string name="doc_aliases_4">Managing aliases:</string>
+
+    <!-- Doc: modules -->
+    <string name="doc_modules_1">Modules are plain .py files that you place in a folder and import via the \"Load modules\" button on the home screen.</string>
+    <string name="doc_modules_2">Each module must define at least NAME and COMMANDS at the top level. AUTHOR and DESCRIPTION are optional but recommended.</string>
+    <string name="doc_modules_3">After saving the file to your scripts folder, tap \"Reload modules\" on the home screen (the accessibility service must be running).</string>
+    <string name="doc_modules_4">Then test it in any text field:</string>
+    <string name="doc_modules_5">Result: Hello, World!</string>
+
+    <!-- Doc: commands format -->
+    <string name="doc_fmt_1">There are two supported formats for declaring commands.</string>
+    <string name="doc_fmt_full_title">━━ Format 1: full (with description) ━━</string>
+    <string name="doc_fmt_short_title">━━ Format 2: shorthand (function only) ━━</string>
+    <string name="doc_fmt_2">Format 2 works the same but the command will have no description in {help}&gt;.</string>
+    <string name="doc_fmt_args_title">━━ Argument handling ━━</string>
+    <string name="doc_fmt_3">If the user types arguments after the command name, they are passed positionally to your function:</string>
+    <string name="doc_fmt_4">If no arguments are given, Executor first tries calling the function with no args. If that fails, it passes the text to the left of the command as the first argument:</string>
+
+    <!-- Doc: packages -->
+    <string name="doc_pkg_1">Go to the \"Package manager\" tab and type the package name, then tap Install.</string>
+    <string name="doc_pkg_2">Only pure Python packages are supported — packages that have no compiled C extensions. These work:</string>
+    <string name="doc_pkg_3">These will NOT work (require C compilation):</string>
+    <string name="doc_pkg_4">After installing, reload your module with \"Reload modules\" so it can import the package.</string>
+
+    <!-- Doc: tips -->
+    <string name="doc_tips_chain_title">━━ Command chaining ━━</string>
+    <string name="doc_tips_chain">Commands are detected left-to-right. You can use the result of one command as input to the next by placing commands sequentially.</string>
+    <string name="doc_tips_naming_title">━━ Module naming ━━</string>
+    <string name="doc_tips_naming">The file name becomes the Python module name. Use only letters, digits and underscores — no spaces or dashes.</string>
+    <string name="doc_tips_debug_title">━━ Debugging ━━</string>
+    <string name="doc_tips_debug">If a command returns \"Error\", check Android logcat with tag Executor for the full Python traceback.</string>
+    <string name="doc_tips_service_title">━━ Service must be running ━━</string>
+    <string name="doc_tips_service">Commands only work when the Executor accessibility service is active. Enable it in Settings → Accessibility → Executor.</string>
 
 </resources>
