@@ -30,6 +30,47 @@ The app supports loading additional Python modules, making it infinitely expanda
 - Support for Python modules to extend functionality
 - Flexibility and scalability
 
+## Features
+
+The app is organized into tabs accessible from the bottom navigation bar:
+
+### 🏠 Home
+
+Set up permissions, select your scripts folder, and reload modules on the fly —
+no need to toggle the accessibility service off and on anymore.
+
+### 📦 Package Manager
+
+Install pure-Python packages from PyPI directly inside the app to use them in your
+modules (e.g. `requests`, `beautifulsoup4`, `python-dateutil`). The screen also
+shows a live list of all currently installed packages, including the ones bundled
+with the app (`requests`, `numpy`, `Pillow`, `regex`, `lxml`).
+
+> Packages with native C extensions can't be installed at runtime — the most useful
+> ones are bundled with the app out of the box.
+
+### ✏️ Code Editor
+
+A built-in code editor with **Python syntax highlighting** (powered by
+[sora-editor](https://github.com/Rosemoe/sora-editor)). Browse your scripts folder,
+open and edit existing modules, or create new ones — all without leaving the app.
+Includes a symbol toolbar with tab and common Python characters for comfortable
+typing on mobile, and saves changes straight back to your folder with an automatic
+module reload.
+
+### 🧩 Module Library
+
+Browse the official [module library](https://executor.jjewuz.com/en/modules.html)
+right inside the app. Each module shows its description, author, compatible versions
+and update date. Tap **Download** to install a module straight into your scripts
+folder — already-installed modules show an **Update** button instead.
+
+### 📖 Documentation
+
+Built-in, fully localized documentation covering command syntax, built-in commands,
+aliases, writing modules, the `COMMANDS` format, installing packages and handy tips.
+Each topic opens in a dedicated screen with formatted text and copyable code examples.
+
 # List of Built-in Basic Commands
 
 ### repeat
@@ -206,6 +247,51 @@ hello world this is test {reverse}>
 
 **Result:** shows the device's current IP address.
 
+### notify
+
+Sends an Android notification with the given text (or the text to the left of the
+command if no argument is provided).
+
+**Syntax:**
+
+```text
+{notify <text>}>
+```
+
+**Example:**
+
+```text
+{notify Don't forget the meeting}>
+```
+
+**Result:** a notification with the text is shown; the command is removed from the field.
+
+### Aliases
+
+Save any text under a short name and insert it later with a single command — handy
+for signatures, templates and frequently typed phrases.
+
+**Save an alias:**
+
+```text
+{save <name> <text>}>
+```
+
+**Insert it** (both forms work):
+
+```text
+{al <name>}>
+{<name>}>
+```
+
+**Manage aliases:**
+
+```text
+{aliases}>            # list all saved aliases
+{clearalias <name>}>  # delete one alias
+{clearalias}>         # delete all aliases
+```
+
 ### help
 
 **Syntax:**
@@ -224,11 +310,63 @@ hello world this is test {reverse}>
 
 Executor monitors input in real-time. When a user enters text in this format, the app identifies the command, processes it, and replaces it with the result. Regular text can be written simultaneously - the app works like a "smart notepad".
 
+## Building from Source
+
+### Requirements
+
+- **Android Studio** (latest stable) or the Android SDK + Gradle
+- **JDK 17**
+- **Python 3.13** installed locally — required by [Chaquopy](https://chaquo.com/chaquopy/) to bundle Python packages at build time (`requests`, `numpy`, `Pillow`, `regex`, `lxml`)
+
+### Setup
+
+1. Clone the repository:
+
+   ```bash
+   git clone https://github.com/jjewuz/Executor.git
+   ```
+
+2. Make sure **Python 3.13** is available. The build looks for it on your `PATH`
+   (via the `py` launcher on Windows, or `python3.13`).
+
+   If your interpreter is in a non-standard location, point Chaquopy to it by
+   adding this line to `local.properties` (this file is **not** committed to git):
+
+   ```properties
+   chaquopy.buildPython=C:/Users/<you>/AppData/Local/Programs/Python/Python313/python.exe
+   ```
+
+   On macOS / Linux:
+
+   ```properties
+   chaquopy.buildPython=/usr/bin/python3.13
+   ```
+
+3. Build a debug APK:
+
+   ```bash
+   ./gradlew assembleDebug
+   ```
+
+   Or install directly to a connected device / emulator:
+
+   ```bash
+   ./gradlew installDebug
+   ```
+
+The output APK is located at `app/build/outputs/apk/debug/app-debug.apk`.
+
+> **Note:** The first build downloads and bundles native Python packages, so it
+> may take a few minutes. Subsequent builds are cached and much faster.
+
 ## Writing Custom Modules
 
 Write a function in Python language. Don't forget about possible errors. The function must always return string type:
 
 ```python
+import urllib.request
+import json
+
 def ip():
     try:
         url = "https://api.myip.com"
@@ -241,6 +379,10 @@ def ip():
     except Exception as e:
         return str(e)
 ```
+
+> You can use any pure-Python package from PyPI — install it from the **Package
+> Manager** tab and `import` it in your module. Several popular packages
+> (`requests`, `numpy`, `Pillow`, `regex`, `lxml`) are bundled and ready to use.
 If your command assumes the use of the text on the left outside the command, specify `text` in the arguments. Example:
 
 ```python
@@ -253,7 +395,7 @@ Using many args:
 ```python
 def summarize(*args):
     total = sum(float(arg) for arg in args)
-    return total
+    return str(total)
 ```
 
 ## Module and commands registration
