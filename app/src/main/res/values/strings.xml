@@ -25,6 +25,7 @@
     <string name="source_code">Source code</string>
     <string name="site">Visit Executor site for guide</string>
     <string name="sitebtn">Site</string>
+    <string name="licenses">Licenses</string>
     <string name="no_description">No description</string>
     <string name="not_specified">Not specified</string>
     <string name="help_module">More details: {help module name}</string>
@@ -42,11 +43,13 @@
     <string name="no_scripts_dir">No scripts folder selected yet. Use \"Load modules\" first.</string>
     <string name="pip_title">Package manager</string>
     <string name="pip_manager">Package manager</string>
-    <string name="pip_warning">Only pure Python packages are supported (no C extensions). Examples: requests, beautifulsoup4, pydantic.</string>
+    <string name="pip_warning">Only pure Python packages are supported (no C extensions).</string>
     <string name="pip_package_hint">Package name</string>
     <string name="pip_install">Install</string>
     <string name="pip_output">Output:</string>
     <string name="pip_installing">Installing %1$s…</string>
+    <string name="pip_installed_title">Installed packages</string>
+    <string name="pip_installed_title_count">Installed packages (%1$d)</string>
     <string name="nav_modules">Modules</string>
     <string name="module_download">Download</string>
     <string name="module_update">Update</string>

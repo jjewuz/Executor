@@ -34,7 +34,7 @@ def repeat(text, n="2"):
     return text * int(n)
 
 def info():
-    return "Executor BETA by jjewuz"
+    return "Executor is real-time text editor, made by jjewuz."
 
 def erase():
     return ""

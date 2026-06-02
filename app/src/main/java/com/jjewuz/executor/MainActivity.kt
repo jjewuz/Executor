@@ -17,6 +17,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
+import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.jjewuz.executor.databinding.ActivityMainBinding
 
@@ -83,6 +84,10 @@ class MainActivity : AppCompatActivity() {
             }
             R.id.github -> { openUrl("https://github.com/jjewuz/Executor"); true }
             R.id.site -> { openUrl("https://executor.jjewuz.com"); true }
+            R.id.licenses -> {
+                startActivity(Intent(this, OssLicensesMenuActivity::class.java))
+                true
+            }
             else -> super.onOptionsItemSelected(item)
         }
     }

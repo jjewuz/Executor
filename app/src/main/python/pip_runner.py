@@ -10,6 +10,24 @@ import zipfile
 PYPI_JSON = "https://pypi.org/pypi/{}/json"
 
 
+def list_installed(extra_path=None):
+    """Return JSON list of installed packages: [{"name":..., "version":...}, ...]"""
+    import importlib.metadata as md
+    if extra_path and extra_path not in sys.path:
+        sys.path.insert(0, extra_path)
+    seen = {}
+    for dist in md.distributions():
+        try:
+            name = dist.metadata["Name"]
+            version = dist.version
+            if name and name.lower() not in seen:
+                seen[name.lower()] = {"name": name, "version": version or "?"}
+        except Exception:
+            continue
+    result = sorted(seen.values(), key=lambda x: x["name"].lower())
+    return json.dumps(result)
+
+
 def run(*args):
     args_list = list(args)
 

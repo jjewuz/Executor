@@ -26,6 +26,7 @@
     <string name="source_code">Исходный код</string>
     <string name="site">Посетите сайт Executor для гайда</string>
     <string name="sitebtn">Сайт</string>
+    <string name="licenses">Лицензии</string>
     <string name="no_description">Нет описания</string>
     <string name="not_specified">Не указано</string>
     <string name="help_module">Подробнее: {help название модуля}</string>
@@ -48,6 +49,8 @@
     <string name="pip_install">Установить</string>
     <string name="pip_output">Вывод:</string>
     <string name="pip_installing">Устанавливаю %1$s…</string>
+    <string name="pip_installed_title">Установленные пакеты</string>
+    <string name="pip_installed_title_count">Установленные пакеты (%1$d)</string>
     <string name="nav_modules">Модули</string>
     <string name="module_download">Скачать</string>
     <string name="module_update">Обновить</string>

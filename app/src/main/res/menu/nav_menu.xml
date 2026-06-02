@@ -15,4 +15,9 @@
         android:enabled="true"
         android:icon="@drawable/info"
         android:title="@string/sitebtn"/>
+    <item
+        android:id="@+id/licenses"
+        android:enabled="true"
+        android:icon="@drawable/info"
+        android:title="@string/licenses"/>
 </menu>

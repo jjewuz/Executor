@@ -7,6 +7,15 @@ plugins {
     id 'com.chaquo.python'
 }
 
+// Optional per-machine Python path for Chaquopy buildPython.
+// Set "chaquopy.buildPython" in local.properties (not committed to git).
+def localProps = new Properties()
+def localPropsFile = rootProject.file("local.properties")
+if (localPropsFile.exists()) {
+    localPropsFile.withInputStream { localProps.load(it) }
+}
+def buildPythonPath = localProps.getProperty("chaquopy.buildPython")
+
 android {
     namespace 'com.jjewuz.executor'
     compileSdk = 36
@@ -15,12 +24,20 @@ android {
         applicationId "com.jjewuz.executor"
         minSdk 29
         targetSdk 36
-        versionCode 10
-        versionName "1.0"
+        versionCode 11
+        versionName "1.1"
         python {
-            version "3.12"
+            version "3.13"
+            if (buildPythonPath != null) {
+                buildPython buildPythonPath
+            }
             pip {
                 install "six"
+                install "requests"
+                install "numpy"
+                install "Pillow"
+                install "regex"
+                install "lxml"
             }
         }
         ndk {
@@ -70,6 +87,7 @@ dependencies {
         implementation("androidx.core:core-splashscreen:1.2.0")
         implementation("androidx.work:work-runtime-ktx:2.11.2")
         implementation("androidx.recyclerview:recyclerview:1.4.0")
+        implementation("com.google.android.gms:play-services-oss-licenses:17.1.0")
         implementation("io.github.Rosemoe.sora-editor:editor:0.23.6")
         implementation("io.github.Rosemoe.sora-editor:language-textmate:0.23.6")
         coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.5")
