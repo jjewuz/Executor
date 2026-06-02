@@ -38,7 +38,7 @@ class EditorFragment : Fragment() {
 
         binding.btnBack.setOnClickListener {
             if (folderStack.size > 1) {
-                folderStack.removeLast()
+                folderStack.removeAt(folderStack.lastIndex)
                 loadCurrentFolder()
             }
         }
